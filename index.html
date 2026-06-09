@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Нумерологія — стародавнє езотеричне мистецтво чисел. Дізнайтесь своє число долі за датою народження та ім'ям. Тільки для розваги." />
+  <meta name="keywords" content="нумерологія, число долі, езотерика, астрологія, дата народження, Україна" />
+  <meta name="robots" content="index, follow" />
+  <title>Нумерологія · Магія Чисел</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────── */
+    :root {
+      --bg:          #06091A;
+      --surface:     #0E1530;
+      --gold:        #C9940A;
+      --gold-light:  #F4D784;
+      --gold-pale:   rgba(201,148,10,0.12);
+      --gold-border: rgba(201,148,10,0.28);
+      --blue-uk:     #1B3FA0;
+      --text:        #EDE4D4;
+      --muted:       #8A7A65;
+      --warn:        rgba(255,180,0,0.08);
+      --warn-border: rgba(255,180,0,0.45);
+    }
+
+    /* ─── RESET ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    /* ─── STARFIELD CANVAS ───────────────────────── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── NAV ────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(6,9,26,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--gold-border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      text-decoration: none;
+      letter-spacing: .06em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    /* ─── HERO ───────────────────────────────────── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+    }
+
+    /* Rotating mandala */
+    .mandala {
+      width: 130px;
+      height: 130px;
+      margin-bottom: 2.5rem;
+      animation: spin 28s linear infinite;
+      filter: drop-shadow(0 0 18px rgba(201,148,10,.35));
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-eyebrow {
+      font-size: .72rem;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: .9rem;
+    }
+    h1.hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.6rem, 9vw, 7.5rem);
+      font-weight: 300;
+      line-height: 1.02;
+      color: var(--gold-light);
+      text-shadow: 0 0 70px rgba(201,148,10,.28);
+      margin-bottom: 1.4rem;
+    }
+    h1.hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.85;
+      margin-bottom: 3rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: .85rem 2.4rem;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold-light);
+      font-family: 'Montserrat', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .3s, box-shadow .3s;
+    }
+    .btn:hover {
+      background: rgba(201,148,10,.16);
+      box-shadow: 0 0 28px rgba(201,148,10,.28);
+    }
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .45rem;
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      animation: float 2.4s ease-in-out infinite;
+    }
+    .scroll-cue-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    @keyframes float {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ─── SECTIONS ───────────────────────────────── */
+    section { position: relative; z-index: 1; padding: 6rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .eyebrow {
+      font-size: .7rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: .7rem;
+    }
+    h2.sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 400;
+      color: var(--gold-light);
+      line-height: 1.15;
+      margin-bottom: 1.3rem;
+    }
+    .sec-lead {
+      font-size: .95rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.9;
+      max-width: 720px;
+    }
+    .rule {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .rule-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+    .rule-gem  { width: 7px; height: 7px; background: var(--gold); transform: rotate(45deg); }
+
+    /* ─── ABOUT ──────────────────────────────────── */
+    #about { background: linear-gradient(180deg, transparent, rgba(13,21,48,.45), transparent); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 2.5rem;
+    }
+    .card-stack { display: flex; flex-direction: column; gap: 1.1rem; }
+    .info-card {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: var(--gold-pale);
+      border: 1px solid var(--gold-border);
+      padding: 1.4rem;
+      transition: border-color .3s;
+    }
+    .info-card:hover { border-color: rgba(201,148,10,.6); }
+    .ic-icon { font-size: 1.7rem; flex-shrink: 0; width: 2.2rem; text-align: center; }
+    .ic-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: .3rem;
+    }
+    .ic-text { font-size: .82rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── CALCULATOR ─────────────────────────────── */
+    #calculator { background: rgba(14,21,48,.35); }
+    #calculator .container { text-align: center; }
+    .calc-box {
+      background: rgba(14,21,48,.9);
+      border: 1px solid var(--gold-border);
+      padding: 3rem;
+      max-width: 640px;
+      margin: 3rem auto 0;
+    }
+    .field-label {
+      display: block;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .5rem;
+      text-align: left;
+    }
+    .field-input {
+      width: 100%;
+      background: rgba(201,148,10,.05);
+      border: 1px solid var(--gold-border);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      padding: .8rem 1rem;
+      outline: none;
+      transition: border-color .3s;
+      margin-bottom: 1.4rem;
+    }
+    .field-input:focus { border-color: var(--gold); }
+    .calc-btn {
+      width: 100%;
+      padding: .95rem;
+      background: rgba(201,148,10,.14);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-family: 'Montserrat', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .3s, box-shadow .3s;
+      margin-bottom: 2rem;
+    }
+    .calc-btn:hover { background: rgba(201,148,10,.28); box-shadow: 0 0 22px rgba(201,148,10,.22); }
+    .calc-result {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      border: 1px solid var(--gold-border);
+      background: rgba(6,9,26,.55);
+    }
+    .calc-result.show { display: block; animation: fadeUp .5s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .res-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5.5rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: .4rem;
+      text-shadow: 0 0 40px rgba(201,148,10,.4);
+    }
+    .res-lbl {
+      font-size: .7rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.3rem;
+    }
+    .res-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.65rem;
+      color: var(--gold-light);
+      margin-bottom: .6rem;
+    }
+    .res-desc { font-size: .88rem; color: var(--text); line-height: 1.85; }
+
+    /* ─── NUMBERS GRID ───────────────────────────── */
+    #numbers .container { max-width: 1100px; }
+    .nums-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1px;
+      background: var(--gold-border);
+      border: 1px solid var(--gold-border);
+      margin-top: 3rem;
+    }
+    .num-cell {
+      background: var(--bg);
+      padding: 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+      cursor: default;
+    }
+    .num-cell:hover { background: rgba(201,148,10,.07); }
+    .num-cell::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .num-cell:hover::before { opacity: 1; }
+    .num-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.8rem;
+      font-weight: 300;
+      color: rgba(201,148,10,.2);
+      line-height: 1;
+      margin-bottom: .4rem;
+      transition: color .3s;
+    }
+    .num-cell:hover .num-big { color: rgba(201,148,10,.6); }
+    .num-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: .4rem;
+    }
+    .num-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .7rem; }
+    .tag {
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-border);
+      padding: .18rem .5rem;
+    }
+
+    /* ─── NAME CALCULATOR ────────────────────────── */
+    #name-calc {
+      background: linear-gradient(180deg, transparent, rgba(14,21,48,.4), transparent);
+    }
+    #name-calc .container { text-align: center; }
+
+    /* ─── HOW IT WORKS ───────────────────────────── */
+    #how .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .step {
+      border: 1px solid var(--gold-border);
+      padding: 2rem 1.5rem;
+      background: var(--gold-pale);
+    }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: rgba(201,148,10,.3);
+      line-height: 1;
+      margin-bottom: .8rem;
+    }
+    .step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: var(--gold-light);
+      margin-bottom: .5rem;
+    }
+    .step-text { font-size: .82rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── DISCLAIMER ─────────────────────────────── */
+    #disclaimer { padding: 3rem 2rem; }
+    .disc-box {
+      max-width: 820px;
+      margin: 0 auto;
+      border: 1px solid var(--warn-border);
+      background: var(--warn);
+      padding: 2rem 2.5rem;
+    }
+    .disc-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+    .disc-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      color: #FFCC44;
+      margin-bottom: .7rem;
+    }
+    .disc-text { font-size: .84rem; color: var(--muted); line-height: 1.85; }
+    .disc-text strong { color: var(--text); }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--gold-border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      color: var(--gold);
+      margin-bottom: .8rem;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .footer-links a {
+      text-decoration: none;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .25s;
+    }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-copy { font-size: .73rem; color: var(--muted); }
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .calc-box { padding: 2rem 1.4rem; }
+      section { padding: 4.5rem 1.2rem; }
+    }
+
+    /* ─── REDUCED MOTION ─────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .mandala { animation: none; }
+      .scroll-cue { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<canvas id="starfield"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Нумеро<span>логія</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">Що це?</a></li>
+    <li><a href="#how">Як це діє</a></li>
+    <li><a href="#calculator">Калькулятор</a></li>
+    <li><a href="#numbers">Числа</a></li>
+    <li><a href="#name-calc">Ім'я</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <!-- Animated mandala SVG -->
+  <svg class="mandala" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <circle cx="65" cy="65" r="60" stroke="#C9940A" stroke-width=".8" stroke-dasharray="5 4"/>
+    <circle cx="65" cy="65" r="45" stroke="#C9940A" stroke-width=".5"/>
+    <circle cx="65" cy="65" r="30" stroke="#F4D784" stroke-width=".5" stroke-dasharray="3 3"/>
+    <polygon points="65,10 97,57.5 84,107.5 46,107.5 33,57.5" stroke="#F4D784" stroke-width=".7"/>
+    <polygon points="65,22 88,62 80,100 50,100 42,62" stroke="#C9940A" stroke-width=".5"/>
+    <circle cx="65" cy="65" r="5" fill="#C9940A" opacity=".9"/>
+    <line x1="65" y1="4" x2="65" y2="34" stroke="#C9940A" stroke-width=".6" opacity=".5"/>
+    <line x1="65" y1="96" x2="65" y2="126" stroke="#C9940A" stroke-width=".6" opacity=".5"/>
+    <line x1="4" y1="65" x2="34" y2="65" stroke="#C9940A" stroke-width=".6" opacity=".5"/>
+    <line x1="96" y1="65" x2="126" y2="65" stroke="#C9940A" stroke-width=".6" opacity=".5"/>
+  </svg>
+
+  <div class="hero-eyebrow">Стародавнє мистецтво чисел</div>
+  <h1 class="hero-title">Нумеро<br><em>логія</em></h1>
+  <p class="hero-sub">
+    Числа оточують нас з народження. Відкрийте, що ваша дата народження
+    та ім'я можуть розповісти про вашу особистість і шлях у цьому світі.
+  </p>
+  <a href="#calculator" class="btn">Розрахувати своє число</a>
+
+  <div class="scroll-cue">
+    <span>Далі</span>
+    <div class="scroll-cue-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="eyebrow">Основи</div>
+    <h2 class="sec-title">Що таке нумерологія?</h2>
+    <p class="sec-lead">
+      Нумерологія — це езотерична практика, яка стверджує, що числа, пов'язані з
+      нашим іменем та датою народження, можуть відображати риси характеру, таланти
+      та можливі тенденції в житті. Це не наука, а традиційна символічна система.
+    </p>
+
+    <div class="rule"><div class="rule-line"></div><div class="rule-gem"></div><div class="rule-line"></div></div>
+
+    <div class="about-grid">
+      <div>
+        <p class="sec-lead" style="margin-bottom:1.4rem">
+          Витоки нумерології сягають Стародавнього Єгипту, Вавилону та
+          давньогрецького філософа Піфагора. Він вважав, що числа є
+          основою всесвіту та здатні описати будь-яке явище природи.
+        </p>
+        <p class="sec-lead">
+          У різних культурах — китайській, єврейській (Кабала), арабській
+          та слов'янській — існували власні числові системи, що пов'язували
+          числа з долею та особистістю людини.
+        </p>
+      </div>
+      <div class="card-stack">
+        <div class="info-card">
+          <div class="ic-icon">📅</div>
+          <div>
+            <div class="ic-title">Число долі</div>
+            <div class="ic-text">Дата народження перетворюється на «число долі», яке у нумерології описує основний шлях та призначення людини.</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">🔤</div>
+          <div>
+            <div class="ic-title">Число імені</div>
+            <div class="ic-text">Кожна буква алфавіту має числове значення. Сума букв імені дає «число виразу» — внутрішню природу особистості.</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">🔮</div>
+          <div>
+            <div class="ic-title">Аналіз особистості</div>
+            <div class="ic-text">Отримані числа використовуються для опису рис характеру, схильностей та сильних сторін (відповідно до езотеричної традиції).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="eyebrow">Методологія</div>
+    <h2 class="sec-title">Як розраховуються числа</h2>
+    <p class="sec-lead">Нумерологія використовує просту математику для зведення дат та імен до однозначних чисел (або «майстер-чисел» 11, 22, 33).</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">І</div>
+        <div class="step-title">Визначте дату</div>
+        <div class="step-text">Запишіть повну дату народження у форматі ДД/ММ/РРРР та виділіть всі цифри.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">ІІ</div>
+        <div class="step-title">Складіть цифри</div>
+        <div class="step-text">Додайте всі цифри дати разом. Наприклад: 15.05.1990 → 1+5+0+5+1+9+9+0 = 30.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">ІІІ</div>
+        <div class="step-title">Зведіть до одного числа</div>
+        <div class="step-text">Якщо сума двозначна, складіть її цифри знову: 30 → 3+0 = 3. Зупиніться на 11, 22 або 33 — це «майстер-числа».</div>
+      </div>
+      <div class="step">
+        <div class="step-num">IV</div>
+        <div class="step-title">Інтерпретуйте</div>
+        <div class="step-text">Знайдіть своє число в таблиці значень та читайте символічний опис особистості.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="container">
+    <div class="eyebrow">Числовий аналіз</div>
+    <h2 class="sec-title">Дізнайтесь своє число долі</h2>
+    <p class="sec-lead" style="margin:0 auto">
+      Введіть дату народження — ми розрахуємо ваше «число долі» та покажемо його символічний опис.
+    </p>
+
+    <div class="calc-box">
+      <label class="field-label" for="birthdate">Дата народження</label>
+      <input type="date" id="birthdate" class="field-input" aria-label="Введіть дату народження" />
+      <button class="calc-btn" onclick="calcDestiny()">✦ Розрахувати число долі</button>
+
+      <div id="destinyResult" class="calc-result">
+        <div class="res-num" id="dNum"></div>
+        <div class="res-lbl">Ваше число долі</div>
+        <div class="res-name" id="dName"></div>
+        <div class="res-desc" id="dDesc"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS GRID -->
+<section id="numbers">
+  <div class="container">
+    <div class="eyebrow">Значення чисел</div>
+    <h2 class="sec-title">Числа від 1 до 9</h2>
+    <p class="sec-lead">
+      Кожне з чисел від 1 до 9 у нумерології має свій архетип та символічне значення.
+      Майстер-числа 11, 22 та 33 вважаються особливо сильними.
+    </p>
+    <div class="nums-grid" id="numsGrid"></div>
+  </div>
+</section>
+
+<!-- NAME CALCULATOR -->
+<section id="name-calc">
+  <div class="container">
+    <div class="eyebrow">Число виразу</div>
+    <h2 class="sec-title">Число вашого імені</h2>
+    <p class="sec-lead" style="margin:0 auto">
+      Введіть ваше ім'я українською — отримаєте «число виразу», яке у нумерології
+      відображає зовнішню природу особистості.
+    </p>
+
+    <div class="calc-box" style="margin-top:3rem">
+      <label class="field-label" for="nameInput">Ваше ім'я (українською)</label>
+      <input type="text" id="nameInput" class="field-input" placeholder="Наприклад: Олена" aria-label="Введіть ваше ім'я" />
+      <button class="calc-btn" onclick="calcName()">✦ Розрахувати число імені</button>
+
+      <div id="nameResult" class="calc-result">
+        <div class="res-num" id="nNum"></div>
+        <div class="res-lbl">Число виразу</div>
+        <div class="res-name" id="nName"></div>
+        <div class="res-desc" id="nDesc"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<section id="disclaimer">
+  <div class="disc-box">
+    <div class="disc-icon">⚠️</div>
+    <div class="disc-title">Важливе застереження</div>
+    <p class="disc-text">
+      <strong>Нумерологія не є наукою.</strong> Це езотерична практика, подібна до астрології,
+      яка не має наукового підтвердження. Жодне дослідження не підтвердило, що числа,
+      отримані з дати народження чи імені, реально впливають на долю або характер людини.
+      <br/><br/>
+      Усі матеріали цього сайту призначені <strong>виключно для розваги та загального
+      ознайомлення</strong>. Не приймайте важливих рішень у житті, здоров'ї, фінансах чи
+      відносинах на підставі нумерологічних розрахунків. У разі серйозних питань
+      звертайтесь до відповідних фахівців.
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Нумерологія · Магія Чисел</div>
+  <ul class="footer-links">
+    <li><a href="#about">Про нумерологію</a></li>
+    <li><a href="#calculator">Калькулятор</a></li>
+    <li><a href="#numbers">Числа 1–9</a></li>
+    <li><a href="#disclaimer">Застереження</a></li>
+  </ul>
+  <p class="footer-copy">
+    © <span id="year"></span> Нумерологія · Усі права захищено · Тільки для розваги
+  </p>
+</footer>
+
+<!-- ─── SCRIPTS ────────────────────────────────────────── -->
+<script>
+/* ── Year ── */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ── Starfield ─────────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    stars = [];
+    const n = Math.floor((canvas.width * canvas.height) / 7000);
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.3 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.012,
+        gold: Math.random() > 0.65
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.a += s.da;
+      if (s.a < 0.05) { s.a = 0.05; s.da *= -1; }
+      if (s.a > 0.95) { s.a = 0.95; s.da *= -1; }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.gold
+        ? `rgba(201,148,10,${s.a})`
+        : `rgba(200,210,255,${s.a * 0.6})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+/* ── Number data ───────────────────────────────────────── */
+const NUMBERS = {
+  1:  { name: 'Лідер',        keywords: ['Воля','Сила','Незалежність'], desc: 'Число 1 символізує нові початки, лідерство та індивідуальність. Людям з цим числом приписують рішучість, амбіції та здатність прокладати власний шлях.' },
+  2:  { name: 'Дипломат',     keywords: ['Гармонія','Партнерство','Чуйність'], desc: 'Число 2 уособлює баланс, співпрацю та чутливість. Таким людям ніби властиві терпеливість, дипломатичність та вміння знаходити компроміс.' },
+  3:  { name: 'Творець',      keywords: ['Творчість','Радість','Комунікація'], desc: 'Число 3 пов\'язують із творчим самовираженням, оптимізмом та товариськістю. Ці якості нібито сприяють яскравому спілкуванню та мистецтву.' },
+  4:  { name: 'Будівничий',   keywords: ['Порядок','Стабільність','Праця'], desc: 'Число 4 символізує стабільність, організованість та наполегливу працю. Такі люди нібито цінують порядок, надійність і конкретні результати.' },
+  5:  { name: 'Мандрівник',   keywords: ['Свобода','Зміни','Авантюризм'], desc: 'Число 5 уособлює свободу, пригоди та бажання змін. Людям з цим числом приписують допитливість, адаптивність та любов до різноманіття.' },
+  6:  { name: 'Опікун',       keywords: ['Любов','Родина','Відповідальність'], desc: 'Число 6 символізує турботу, гармонію в родині та відповідальність. Ці якості нібито проявляються у великій теплоті до близьких і відчутті обов\'язку.' },
+  7:  { name: 'Мудрець',      keywords: ['Мудрість','Духовність','Аналіз'], desc: 'Число 7 пов\'язують із пошуком знань, духовністю та глибоким аналізом. Таким людям ніби властиві інтроверсія, інтуїція та прагнення до істини.' },
+  8:  { name: 'Реалізатор',   keywords: ['Влада','Амбіції','Успіх'], desc: 'Число 8 символізує матеріальний успіх, владу та цілеспрямованість. Такі люди нібито здатні досягати великих цілей через наполегливість і ділову хватку.' },
+  9:  { name: 'Гуманіст',     keywords: ['Альтруїзм','Завершення','Мудрість'], desc: 'Число 9 уособлює завершення циклів, гуманізм та широке мислення. Людям з цим числом приписують щедрість, мрійливість та прагнення змінити світ на краще.' },
+  11: { name: 'Провидець',    keywords: ['Інтуїція','Просвітлення','Натхнення'], desc: 'Майстер-число 11 вважається числом духовного просвітлення та інтуїції. Ці люди ніби несуть особливу місію та відчувають тонкі вібрації світу.' },
+  22: { name: 'Майстер-будівничий', keywords: ['Велика мета','Майстерність','Практика'], desc: 'Майстер-число 22 символізує здатність втілювати грандіозні мрії в реальність. Таким людям приписують унікальне поєднання натхнення та практичності.' },
+  33: { name: 'Учитель',      keywords: ['Любов до людства','Жертовність','Мудрість'], desc: 'Майстер-число 33 — найвищий рівень духовної відповідальності. Ці люди ніби покликані нести добро та мудрість усьому людству.' }
+};
+
+/* ── Render number grid ────────────────────────────────── */
+(function renderGrid() {
+  const grid = document.getElementById('numsGrid');
+  [1,2,3,4,5,6,7,8,9].forEach(n => {
+    const d = NUMBERS[n];
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="num-cell">
+        <div class="num-big">${n}</div>
+        <div class="num-name">${d.name}</div>
+        <div class="num-desc">${d.desc.slice(0,90)}…</div>
+        <div class="tags">${d.keywords.map(k=>`<span class="tag">${k}</span>`).join('')}</div>
+      </div>
+    `);
+  });
+})();
+
+/* ── Destiny calculator ────────────────────────────────── */
+function reduceNum(n) {
+  if (n === 11 || n === 22 || n === 33) return n;
+  while (n > 9) {
+    n = String(n).split('').reduce((a,d)=>a+parseInt(d),0);
+    if (n === 11 || n === 22 || n === 33) return n;
+  }
+  return n;
+}
+
+function calcDestiny() {
+  const val = document.getElementById('birthdate').value;
+  if (!val) { alert('Будь ласка, введіть дату народження.'); return; }
+  const digits = val.replace(/\D/g,'');
+  const sum = digits.split('').reduce((a,d)=>a+parseInt(d),0);
+  const num = reduceNum(sum);
+  const data = NUMBERS[num] || NUMBERS[1];
+
+  document.getElementById('dNum').textContent  = num;
+  document.getElementById('dName').textContent = data.name;
+  document.getElementById('dDesc').textContent = data.desc;
+
+  const el = document.getElementById('destinyResult');
+  el.classList.remove('show');
+  void el.offsetWidth; // reflow
+  el.classList.add('show');
+}
+
+/* ── Name calculator ───────────────────────────────────── */
+const UA_MAP = {
+  'А':1,'Б':2,'В':3,'Г':4,'Ґ':5,'Д':6,'Е':7,'Є':8,'Ж':9,
+  'З':1,'И':2,'І':3,'Ї':4,'Й':5,'К':6,'Л':7,'М':8,'Н':9,
+  'О':1,'П':2,'Р':3,'С':4,'Т':5,'У':6,'Ф':7,'Х':8,'Ц':9,
+  'Ч':1,'Ш':2,'Щ':3,'Ь':4,'Ю':5,'Я':6
+};
+
+function calcName() {
+  const raw = document.getElementById('nameInput').value.trim().toUpperCase();
+  if (!raw) { alert('Будь ласка, введіть ваше ім\'я.'); return; }
+
+  let sum = 0;
+  for (const ch of raw) {
+    if (UA_MAP[ch]) sum += UA_MAP[ch];
+  }
+  if (sum === 0) { alert('Будь ласка, введіть ім\'я українськими літерами.'); return; }
+
+  const num  = reduceNum(sum);
+  const data = NUMBERS[num] || NUMBERS[1];
+
+  document.getElementById('nNum').textContent  = num;
+  document.getElementById('nName').textContent = data.name;
+  document.getElementById('nDesc').textContent = data.desc;
+
+  const el = document.getElementById('nameResult');
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+/* ── Enter key support ─────────────────────────────────── */
+document.getElementById('birthdate').addEventListener('keydown', e => { if(e.key==='Enter') calcDestiny(); });
+document.getElementById('nameInput').addEventListener('keydown', e => { if(e.key==='Enter') calcName(); });
+</script>
+</body>
+</html>
